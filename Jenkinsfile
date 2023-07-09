@@ -27,15 +27,20 @@ pipeline {
             }
         }
         stage('Deliver') {
-            agent {
-                docker {
-                    image 'cdrx/pyinstaller-linux:python2'
-                    args "--entrypoint=''"
-                }
-            }
+            environment {
+                   //VOLUME = '$(pwd)/sources:/src '
+                   VOLUME = '$PWD/sources:/src'
+                   IMAGE = 'cdrx/pyinstaller-linux:python3'
+               }
             steps {
-                sh 'docker run pyinstaller --onefile sources/add2vals.py'
-            }
+                   dir(path: env.BUILD_ID) {
+                       unstash(name: 'compiled-results')
+
+                       //sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
+                       //used PyInstaller as a module 
+                         sh "docker run --rm -v ${VOLUME} ${IMAGE} 'python3 -m PyInstaller -F add2vals.py'"
+                   }
+               }
             post {
                 success {
                     archiveArtifacts 'dist/add2vals'
