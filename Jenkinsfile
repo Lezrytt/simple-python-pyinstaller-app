@@ -29,7 +29,7 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    image 'cdrx/pyinstaller-linux:python2'
+                    image 'cdrx/pyinstaller-linux:python3'
                     args "--entrypoint=''"
                 }
             }
@@ -37,7 +37,7 @@ pipeline {
                 sh 'pyinstaller --onefile sources/add2vals.py'
             }
             post {
-                always {
+                success {
                     archiveArtifacts 'dist/add2vals'
                 }
             }
